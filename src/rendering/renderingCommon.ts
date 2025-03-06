@@ -18,6 +18,7 @@ export const JIRA_STATUS_COLOR_MAP_BY_NAME: Record<string, string> = {
     'Planning': 'is-dark',
     'To Do': 'is-dark',
     'In Progress': 'is-info',
+    'Dev In Progress': 'is-info',
     'Code Review': 'is-info',
     'Review': 'is-info',
     'Dev Complete': 'is-info',

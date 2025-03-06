@@ -9,6 +9,7 @@ export class SearchView {
     columns: ISearchColumn[] = []
     account: IJiraIssueAccountSettings = null
     label: string = null
+    customStatusSort: boolean = false
     private _cacheKey: string = null
 
     static fromString(str: string): SearchView {
@@ -84,6 +85,9 @@ export class SearchView {
                     case 'label':
                         sv.label = value
                         break
+                    case 'customstatussort':
+                        sv.customStatusSort = value.toLowerCase() === 'true'
+                        break
                     default:
                         throw new Error(`Invalid key: ${key.trim()}`)
                 }
@@ -113,6 +117,9 @@ export class SearchView {
         }
         if (this.account) {
             result += `account: ${this.account.alias}\n`
+        }
+        if (this.customStatusSort) {
+            result += `customStatusSort: true\n`
         }
         return result
     }

@@ -195,12 +195,13 @@ export default {
         return issue
     },
 
-    async getSearchResults(query: string, options: { limit?: number, offset?: number, fields?: string[], account?: IJiraIssueAccountSettings } = {}): Promise<IJiraSearchResults> {
+    async getSearchResults(query: string, options: { limit?: number, offset?: number, fields?: string[], account?: IJiraIssueAccountSettings, customStatusSort?: boolean } = {}): Promise<IJiraSearchResults> {
         const opt = {
             fields: options.fields || [],
             offset: options.offset || 0,
             limit: options.limit || 50,
             account: options.account || null,
+            customStatusSort: options.customStatusSort || false,
         }
         const queryParameters = new URLSearchParams({
             jql: query,
@@ -220,7 +221,31 @@ export default {
             issue.account = searchResults.account
             await fetchIssueImages(issue)
         }
-        return searchResults
+        const statusOrder = [
+            "To Do",
+            "Dev In Progress",
+            "In Review",
+            "QA Verification",
+            "QA In Progress",
+            "Stakeholder Review",
+            "Done",
+        ]
+        if(opt.customStatusSort) {
+            searchResults.issues = searchResults.issues.sort((a, b) => {
+                const aIndex = statusOrder.indexOf(a.fields.status.name)
+                const bIndex = statusOrder.indexOf(b.fields.status.name)
+                if (aIndex === -1 && bIndex === -1) {
+                    return 0
+                } else if (aIndex === -1) {
+                    return 1
+                } else if (bIndex === -1) {
+                    return -1
+                } else {
+                    return aIndex - bIndex
+                }
+            }); 
+        }
+        return searchResults;
     },
 
     async updateStatusColorCache(status: string, account: IJiraIssueAccountSettings): Promise<void> {
